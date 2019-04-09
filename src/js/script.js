@@ -73,11 +73,11 @@ const data = [
     ['X9SmcY3lM-U', '7BvHoh0BrMw', 'mC8JW_aG2EM']
 ];
 
-more.addEventListener('click', function() {
+more.addEventListener('click', function () {
     const videosWrapper = document.querySelector('.videos__wrapper');
     this.remove();
 
-    for(let i = 0; i < data[i].length; i++) {
+    for (let i = 0; i < data[i].length; i++) {
         let card = document.createElement('a');
         card.classList.add('videos__item', 'videos__item-active');
         card.setAttribute('data-url', data[3][i]);
@@ -94,6 +94,79 @@ more.addEventListener('click', function() {
         setTimeout(() => {
             card.classList.remove('videos__item-active')
         }, 10);
-        videosWrapper.appendChild(this);
+        card.addEventListener('click', (e) => {
+            e.preventDefault();
+            const id = card.getAttribute('data-url');
+            loadVideo(id);
+            openModal();
+        })
     }
+
+    sliceTitle('.videos__item-descr', 100);
+    videosWrapper.appendChild(this);
 })
+
+function sliceTitle(selector, count) {
+    document.querySelectorAll(selector).forEach(item => {
+        item.textContent.trim();
+
+        if (item.textContent.length < count) {
+            return;
+        } else {
+            const str = item.textContent.slice(0, count + 1) + '...';
+            item.textContent = str;
+        }
+    });
+}
+
+sliceTitle('.videos__item-descr', 100);
+
+function openModal() {
+    modal.style.display = 'block';
+}
+
+function closeModal() {
+    modal.style.display = 'none';
+    player.stopVideo();
+}
+
+function bindModal(cards) {
+    cards.forEach(card => {
+        card.addEventListener('click', (e) => {
+            e.preventDefault();
+            const id = card.getAttribute('data-url');
+            loadVideo(id);
+            openModal();
+        });
+    });
+}
+
+bindModal(videos);
+
+modal.addEventListener('click', function (e) {
+    if (!e.target.classList.contains('modal__body')) {
+        closeModal();
+    }
+});
+
+function createPlayer() { // переделать через промисы
+    var tag = document.createElement('script');
+
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    setTimeout(() => { 
+        player = new YT.Player('frame', {
+            height: '100%',
+            width: '100%',
+            videoId: 'M7lc1UVf-VE',
+        });
+    }, 300);
+}
+
+createPlayer();
+
+function loadVideo(id) {
+    player.loadVideoById({'videoId': `${id}`});
+}
