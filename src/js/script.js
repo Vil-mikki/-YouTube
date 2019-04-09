@@ -91,6 +91,14 @@ more.addEventListener('click', function () {
             </div>
         `;
         videosWrapper.appendChild(card);
+        if(night === true) {
+            document.querySelectorAll('.videos__item-descr').forEach(item => {
+                item.style.color = '#fff';
+            });
+            document.querySelectorAll('.videos__item-views').forEach(item => {
+                item.style.color = '#fff';
+            });
+        }
         setTimeout(() => {
             card.classList.remove('videos__item-active')
         }, 10);
@@ -151,8 +159,8 @@ modal.addEventListener('click', function (e) {
 
 function createPlayer() { // переделать через промисы
     var tag = document.createElement('script');
-
     tag.src = "https://www.youtube.com/iframe_api";
+
     var firstScriptTag = document.getElementsByTagName('script')[0];
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
@@ -164,6 +172,7 @@ function createPlayer() { // переделать через промисы
         });
     }, 300);
 }
+
 
 createPlayer();
 
