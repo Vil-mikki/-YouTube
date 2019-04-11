@@ -122,7 +122,6 @@ function start() {
             "playlistId": "PLKaafC45L_SSn3kZGmnh6uRSTAzDNNdYC"
         });
     }).then(function(response) {
-        console.log(response.result);
         response.result.items.forEach((item) => {
             let card = document.createElement('a');
             card.classList.add('videos__item', 'videos__item-active');
@@ -131,11 +130,19 @@ function start() {
                 <img src="${item.snippet.thumbnails.high.url}" alt="thumb">
                 <div class="videos__item-descr">
                     ${item.snippet.title}
-                </div>
+                </div>`;
+            let promise = new Promise(function(resolve, reject) {
+                resolve(gapi.client.youtube.videos.list({
+                "part": "statistics",
+                "id": `${item.contentDetails.videoId}`
+                })); 
+            });
+            promise.then(function(response) {
+                card.innerHTML += `
                 <div class="videos__item-views">
-                    2.7 тыс. просмотров
-                </div>
-            `;
+                    ${response.result.items[0].statistics.viewCount} тыс. просмотров
+                </div>`;
+            }); 
             videosWrapper.appendChild(card);
             if(night === true) {
                 card.querySelector('.videos__item-descr').style.color = '#fff';
@@ -154,7 +161,7 @@ function start() {
         sliceTitle('.videos__item-descr', 95);
     }).catch(function(err) {
         console.log(err);
-    })
+    });
 }
 
 more.addEventListener('click', () => {
@@ -187,10 +194,20 @@ function search(target) {
                 <div class="videos__item-descr">
                     ${item.snippet.title}
                 </div>
-                <div class="videos__item-views">
-                    2.7 тыс. просмотров
-                </div>
             `;
+            let promise = new Promise(function(resolve, reject) {
+                resolve(gapi.client.youtube.videos.list({
+                "part": "statistics",
+                "id": `${item.id.videoId}`
+                })); 
+            });
+            promise.then(function(response) {
+                console.log(response.result);
+                card.innerHTML += `
+                <div class="videos__item-views">
+                    ${response.result.items[0].statistics.viewCount} тыс. просмотров
+                </div>`;
+            }); 
             videosWrapper.appendChild(card);
             if(night === true) {
                 card.querySelector('.videos__item-descr').style.color = '#fff';
